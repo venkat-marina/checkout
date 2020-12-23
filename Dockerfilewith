@@ -1,0 +1,45 @@
+ # Use latest jboss/wildfly10.1.0 (base-jdk:11) image as the base
+FROM jboss/base-jdk:11
+ 
+ WORKDIR /opt/jboss/wildfly
+ 
+ USER root 
+ # deploy the wildfly-10.0.0.Final
+ Add wildfly-10.1.0.Final.tar.gz /opt/jboss/wildfly
+ 
+
+  # deploy the kie-drools
+ ADD kie-drools-wb-7.3.0.Final-wildfly10.war /opt/jboss/wildfly/wildfly-10.1.0.Final/standalone/deployments/
+
+ # deploy the kie-Server
+ ADD kie-server-7.3.0.Final-ee7.war /opt/jboss/wildfly/wildfly-10.1.0.Final/standalone/deployments/
+ 
+ USER root
+ #set Management User  
+ RUN /opt/jboss/wildfly/wildfly-10.1.0.Final/bin/add-user.sh --silent=true  -u 'admin' -p 'Admin#70365' -g 'admin,developer'
+ 
+ USER root
+ #set Application User  
+ RUN /opt/jboss/wildfly/wildfly-10.1.0.Final/bin/add-user.sh --silent=true -a -u 'kieserver' -p 'kieserver#70365' -g 'admin,kie-server,rest-all,kiemgmt'
+ 
+ USER root
+ #Add the changed config file 
+ ADD standalone.rar /opt/jboss/wildfly/wildfly-10.1.0.Final/bin
+ 
+  #Add the changed standalone file 
+ ADD standalone-full.xml /opt/jboss/wildfly/wildfly-10.1.0.Final/standalone/configuration
+ 
+ USER root
+
+ #RUN chmod 755 /opt/jboss/wildfly/bin/standalone.sh
+ 
+ #CMD ["/opt/jboss/wildfly/wildfly-10.1.0.Final/bin/standalone.sh ","-c","standalone-full.xml", "-b", "0.0.0.0"]
+
+ 
+ # Set the default command to run on boot
+ # This will boot WildFly in the standalone mode and bind to all interface
+
+ 
+
+
+ 
